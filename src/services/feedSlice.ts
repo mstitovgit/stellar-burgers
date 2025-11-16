@@ -5,17 +5,17 @@ import { RootState } from './store';
 
 type TFeed = {
   orders: TOrder[];
-  total: number | null;
-  totalToday: number | null;
-  loading: boolean;
+  total: number;
+  totalToday: number;
+  isLoading: boolean;
   error: string | null;
 };
 
 const initialState: TFeed = {
   orders: [],
-  total: null,
-  totalToday: null,
-  loading: false,
+  total: 0,
+  totalToday: 0,
+  isLoading: false,
   error: null
 };
 
@@ -28,18 +28,18 @@ export const feedSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchFeed.pending, (state, action) => {
-        state.loading = true;
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchFeed.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.orders = action.payload.orders;
         state.total = action.payload.total;
         state.totalToday = action.payload.totalToday;
         state.error = null;
       })
       .addCase(fetchFeed.rejected, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.error = action.error.message ?? null;
       });
   }
