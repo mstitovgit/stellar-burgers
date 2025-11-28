@@ -1,3 +1,10 @@
+const bunListSelector = '[data-cy-category="bun"]';
+const mainListSelector = '[data-cy-category="main"]';
+const constructorSelector = '[data-cy="burger-constructor"]';
+const modalSelector = '[data-cy="modal"]';
+const closeModalBtnSelector = '[data-cy="close-modal-button"]';
+const ingredientLinkSelector = '[data-cy="ingredient-link"]';
+
 describe('Интеграционные тесты', () => {
   beforeEach(() => {
     cy.intercept('GET', 'api/ingredients', { fixture: 'ingredients.json' }).as(
@@ -9,6 +16,7 @@ describe('Интеграционные тесты', () => {
     cy.intercept('POST', 'api/orders', { fixture: 'order.json' }).as(
       'createOrder'
     );
+
     cy.window().then((window) => {
       window.localStorage.setItem('refreshToken', 'mockRefreshTokenValue');
     });
@@ -25,50 +33,50 @@ describe('Интеграционные тесты', () => {
   });
 
   it('Должен добавить выбранную булку в конструктор и проверить ее ID', () => {
-    cy.get('[data-cy-category="bun"]')
+    cy.get(bunListSelector)
       .first()
       .invoke('attr', 'data-cy-id')
       .then((bunId) => {
-        cy.get('[data-cy-category="bun"]').first().find('button').click();
-        cy.get('[data-cy="burger-constructor"]')
+        cy.get(bunListSelector).first().find('button').click();
+        cy.get(constructorSelector)
           .find(`[data-cy-id="${bunId}"]`)
           .should('exist');
       });
   });
 
   it('Должен добавить выбранную начинку в конструктор и проверить ее ID', () => {
-    cy.get('[data-cy-category="main"]')
+    cy.get(mainListSelector)
       .first()
       .invoke('attr', 'data-cy-id')
       .then((bunId) => {
-        cy.get('[data-cy-category="main"]').first().find('button').click();
-        cy.get('[data-cy="burger-constructor"]')
+        cy.get(mainListSelector).first().find('button').click();
+        cy.get(constructorSelector)
           .find(`[data-cy-id="${bunId}"]`)
           .should('exist');
       });
   });
 
   it('Тест работы модальных окон', () => {
-    cy.get('[data-cy="ingredient-link"]').first().click();
-    cy.get('[data-cy="modal"]').should('exist');
-    cy.get('[data-cy="close-modal-button"]').click();
-    cy.get('[data-cy="modal"]').should('not.exist');
-    cy.get('[data-cy="ingredient-link"]').first().click();
-    cy.get('[data-cy="modal"]').should('exist');
+    cy.get(ingredientLinkSelector).first().click();
+    cy.get(modalSelector).should('exist');
+    cy.get(closeModalBtnSelector).click();
+    cy.get(modalSelector).should('not.exist');
+    cy.get(ingredientLinkSelector).first().click();
+    cy.get(modalSelector).should('exist');
     cy.get('[data-cy="overlay-modal"]').click({ force: true });
-    cy.get('[data-cy="modal"]').should('not.exist');
+    cy.get(modalSelector).should('not.exist');
   });
 
   it('Тест создания заказа', () => {
     cy.wait('@getUser');
 
-    cy.get('[data-cy-category="bun"]').first().find('button').click();
-    cy.get('[data-cy-category="main"]').first().find('button').click();
+    cy.get(bunListSelector).first().find('button').click();
+    cy.get(mainListSelector).first().find('button').click();
     cy.get('[data-cy="order-button"]').click();
     cy.wait('@createOrder');
-    cy.get('[data-cy="modal"]').contains('12345');
-    cy.get('[data-cy="close-modal-button"]').click();
-    cy.get('[data-cy="modal"]').should('not.exist');
+    cy.get(modalSelector).contains('12345');
+    cy.get(closeModalBtnSelector).click();
+    cy.get(modalSelector).should('not.exist');
     cy.get('[data-cy="constructor-ingredient"]').should('not.exist');
   });
 });
