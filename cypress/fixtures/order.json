@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "name": "Galaxy Burger",
+  "order": {
+    "number": 12345
+  }
+}
